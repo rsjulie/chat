@@ -1,34 +1,88 @@
+import 'package:chat/models/auth_form_data.dart';
 import 'package:flutter/material.dart';
 
-class AuthForm extends StatelessWidget {
+class AuthForm extends StatefulWidget {
+  @override
+  State<AuthForm> createState() => _AuthFormState();
+}
+
+class _AuthFormState extends State<AuthForm> {
+  final _formKey = GlobalKey<FormState>();
+  final _formData = AuthFormData();
+
+  void _submit() {
+    final isValid = _formKey.currentState?.validate() ?? false;
+    if (!isValid) return;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 0,
-      color: Colors.transparent,
       margin: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
       child: Padding(
         padding: const EdgeInsets.all(15),
         child: Form(
+          key: _formKey,
           child: Column(
             children: [
-              TextFormField(
-                cursorColor: Colors.amber,
-                style: TextStyle(
-                  color: Colors.white,
+              if (_formData.isSignup)
+                TextFormField(
+                  key: ValueKey('name'),
+                  initialValue: _formData.name,
+                  onChanged: (name) => _formData.name = name,
+                  decoration: InputDecoration(
+                    labelText: 'Nome',
+                  ),
+                  validator: (_name) {
+                    final name = _name ?? '';
+                    if (name.trim().length < 4) {
+                      return 'Nome deve ter no minimo 4 caracteres';
+                    }
+                    return null;
+                  },
                 ),
-                decoration: InputDecoration(
-                  labelText: 'Nome',
-                  fillColor: Colors.black,
-                ),
-              ),
               TextFormField(
+                key: ValueKey('email'),
+                initialValue: _formData.email,
+                onChanged: (email) => _formData.email = email,
                 decoration: InputDecoration(labelText: 'E-mail'),
+                validator: (_email) {
+                  final email = _email ?? '';
+                  if (!email.contains('@')) {
+                    return 'Email invalido!';
+                  }
+                  return null;
+                },
               ),
               TextFormField(
+                key: ValueKey('password'),
+                initialValue: _formData.password,
+                onChanged: (password) => _formData.password = password,
                 obscureText: true,
                 decoration: InputDecoration(labelText: 'Senha'),
+                validator: (_password) {
+                  final password = _password ?? '';
+                  if (password.length < 5) {
+                    return 'Senha deve ter no minimo 5 caracteres';
+                  }
+                  return null;
+                },
               ),
+              SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: _submit,
+                child: Text(_formData.isLogin ? 'Entrar' : 'Cadastrar'),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _formData.toggleAuthMode();
+                  });
+                },
+                child: Text(_formData.isLogin
+                    ? 'Criar uma nova conta'
+                    : 'Já possui conta?'),
+              )
             ],
           ),
         ),
