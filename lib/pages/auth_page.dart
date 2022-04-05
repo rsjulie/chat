@@ -21,7 +21,7 @@ class _AuthPageState extends State<AuthPage> {
             formData.name, formData.email, formData.password, formData.image);
       }
     } catch (error) {
-      print('dwad');
+      //tratar erro
     } finally {
       setState(() => _isLoading = false);
     }
